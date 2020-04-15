@@ -20,7 +20,7 @@ class TopicObserver
     }
 
 
-     public function saved(Topic $topic)
+    public function saved(Topic $topic)
     {
         // 如 slug 字段无内容，即使用翻译器对 title 进行翻译
         if ( ! $topic->slug) {
@@ -28,5 +28,10 @@ class TopicObserver
             // 推送任务到队列
             dispatch(new TranslateSlug($topic));
         }
+    }
+
+    public function deleted(Topic $topic)
+    {
+        \DB::table('replies')->where('topic_id', $topic->id)->delete();
     }
 }
